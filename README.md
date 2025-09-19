@@ -16,35 +16,25 @@ import Tun2SocksKit
 
 ### Running Tun2SocksKit
 
-Use a file URL to run it
 ```swift
-let code = Socks5Tunnel.run(withConfig: .file(path: localConfigFileURL))
-```
+override func startTunnel(options: [String : NSObject]?) async throws {
+    let tunnel = Socks5TunnelProvider.shared
 
-Or the contents of the config file as a string
-```swift
-let code = Socks5Tunnel.run(withConfig: .string(content: stringConfigContent))
-```
+    let configString = "... YAML ..."
+    tunnel.start(with: .string(content: configString))
+}
 
-You can run it non-blocking as well
-```swift
-Socks5Tunnel.run(withConfig: .string(content: stringConfigContent)) { code in
-    // Do stuff with code
+override func stopTunnel(with reason: NEProviderStopReason) async {
+    Socks5TunnelProvider.shared.stop()
 }
 ```
 
 ### Stats
 To get stats you need to call
 ```swift
-let stats = Socks5Tunnel.stats
-```
-
-Both packet count and bytes transmitted/received are provided
-```swift
-print(stats.up.packets)
-print(stats.up.bytes)
-print(stats.down.packets)
-print(stats.down.bytes)
+let stats = tunnel.statistics()
+print("↑\(stats.up.packets) pkts / \(stats.up.bytes) bytes")
+print("↓\(stats.down.packets) pkts / \(stats.down.bytes) bytes")
 ```
 
 ## Config
